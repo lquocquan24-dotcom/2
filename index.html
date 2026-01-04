@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026寒假AI实践团 | 成员信息确认</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+        .progress-bar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
+
+    <div class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl w-full max-w-lg border-t-8 border-blue-600 relative overflow-hidden">
+        
+        <div id="progressContainer" class="w-full bg-gray-100 h-1.5 rounded-full mb-10 overflow-hidden hidden">
+            <div id="progressBar" class="progress-bar bg-blue-600 h-full w-0"></div>
+        </div>
+
+        <header class="text-center mb-10">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">2026 寒假社会实践</h1>
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mt-2 uppercase tracking-widest">
+                AI Club · Panjin Campus
+            </div>
+        </header>
+
+        <div id="authStep" class="step active">
+            <div class="mb-8 text-center">
+                <h2 class="text-lg font-bold text-slate-800 mb-2">身份核验</h2>
+                <p class="text-sm text-slate-500">仅限实践团 29 名正式成员进入</p>
+            </div>
+            <div class="space-y-5">
+                <input type="text" id="inputName" placeholder="真实姓名" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all">
+                <input type="text" id="inputID" placeholder="学生学号 (11位)" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all">
+                <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all">
+                    验证并进入系统
+                </button>
+            </div>
+        </div>
+
+        <form id="mainForm" action="https://formspree.io/f/xbdlqrrv" method="POST" class="hidden">
+            <input type="hidden" name="姓名" id="hiddenName">
+            <input type="hidden" name="学号" id="hiddenID">
+
+            <div id="step1" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">01. 联系方式收集</h2>
+                <div class="space-y-5">
+                    <input type="tel" name="手机号" required placeholder="手机号码" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all">
+                    <input type="text" name="QQ号" required placeholder="QQ号码" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all">
+                    <button type="button" onclick="nextStep(2)" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">下一步</button>
+                </div>
+            </div>
+
+            <div id="step2" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">02. 评优意愿分流</h2>
+                <div class="space-y-4">
+                    <label class="relative block p-5 border-2 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="评优意愿" value="意愿评优" class="hidden peer" checked>
+                        <div class="font-bold text-slate-800 text-sm">有意愿参与社会实践团评优</div>
+                        <div class="text-[10px] text-slate-500 mt-2">※ 需认真准备对应材料和组织答辩</div>
+                    </label>
+                    <label class="relative block p-5 border-2 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="评优意愿" value="不参与评优" class="hidden peer">
+                        <div class="font-bold text-slate-800 text-sm">无意愿参与社会实践团评优</div>
+                        <div class="text-[10px] text-slate-500 mt-2">按计划完成基础调研，配合组内分工</div>
+                    </label>
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="nextStep(1)" class="w-1/3 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="button" onclick="nextStep(3)" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">下一步</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step3" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">03. 个人技能摸底</h2>
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-400">请详述技能点（如：剪映、摄影、文档、Python、AI工具、秀米等）</p>
+                    <textarea name="技能点" rows="5" required placeholder="请在这里描述你的特长，方便后续分配工作..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all"></textarea>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="nextStep(2)" class="w-1/3 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="button" onclick="nextStep(4)" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">下一步</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step4" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">04. 后勤保障确认</h2>
+                <div class="space-y-6">
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <label class="block text-xs font-bold text-slate-400 mb-3 text-center tracking-widest uppercase">实践期间住宿是否统一安排？</label>
+                        <select name="住宿安排" class="w-full bg-transparent font-bold text-slate-700 outline-none text-center">
+                            <option value="统一安排">是，由实践团统一安排</option>
+                            <option value="自行安排">否，个人自行安排</option>
+                        </select>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        <label class="block text-xs font-bold text-slate-400 mb-3 text-center tracking-widest uppercase">实践期间饮食是否统一安排？</label>
+                        <select name="饮食安排" class="w-full bg-transparent font-bold text-slate-700 outline-none text-center">
+                            <option value="统一安排">是，由实践团统一安排</option>
+                            <option value="自行安排">否，个人自行安排</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="nextStep(3)" class="w-1/4 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="submit" class="w-3/4 bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-100 hover:bg-green-700 transition-all">
+                            确认并提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div id="successMsg" class="hidden text-center py-10">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">提交成功</h2>
+            <p class="text-slate-500 mb-8 px-6 text-sm">信息已存入社长数据库。请截图此页面并在群内回复“已填写”。</p>
+            <button onclick="location.reload()" class="text-blue-600 text-sm font-bold hover:underline">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // 【白名单】已录入 29 名正式成员
+        const whiteList = [
+            { name: "李雪峰", id: "20243121810" }, { name: "李汶璐", id: "20243131117" },
+            { name: "冯允馨", id: "20253144071" }, { name: "贾宜方", id: "20223192016" },
+            { name: "梁洪瑞", id: "20253142055" }, { name: "郭耘赫", id: "20253141032" },
+            { name: "李梵", id: "20253143039" }, { name: "陈思东", id: "20243141074" },
+            { name: "王佳冉", id: "20253145082" }, { name: "辛胡萱", id: "20253121253" },
+            { name: "李文涛", id: "20243121902" }, { name: "穆伟豪", id: "20233281009" },
+            { name: "雷云辉", id: "20253143010" }, { name: "洪乐祺", id: "20253145033" },
+            { name: "吕思辰", id: "20253121493" }, { name: "刘思含", id: "20253145044" },
+            { name: "张庆华", id: "20253121347" }, { name: "徐章余立", id: "20243131013" },
+            { name: "乔治文", id: "20253121838" }, { name: "张今阁", id: "20243121133" },
+            { name: "王梓霖", id: "20253143048" }, { name: "叶博宇", id: "20253144013" },
+            { name: "黄腾逸", id: "20253143073" }, { name: "曹馨颖", id: "20253145035" },
+            { name: "周一凡", id: "20253141050" }, { name: "马丁", id: "20253144068" },
+            { name: "夏心蕊", id: "20243121845" }, { name: "张丹", id: "20253131035" },
+            { name: "李心言", id: "20253145006" }
+        ];
+
+        function handleAuth() {
+            const nameInput = document.getElementById('inputName').value.trim();
+            const idInput = document.getElementById('inputID').value.trim();
+            const user = whiteList.find(u => u.name === nameInput && u.id === idInput);
+
+            if (user) {
+                document.getElementById('hiddenName').value = nameInput;
+                document.getElementById('hiddenID').value = idInput;
+                document.getElementById('authStep').classList.add('hidden');
+                document.getElementById('mainForm').classList.remove('hidden');
+                document.getElementById('progressContainer').classList.remove('hidden');
+                nextStep(1);
+            } else {
+                alert("身份核验失败：请检查姓名和学号是否正确。如有疑问请联系李社长。");
+            }
+        }
+
+        function nextStep(n) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            document.getElementById('step' + n).classList.add('active');
+            document.getElementById('progressBar').style.width = (n / 4) * 100 + '%';
+        }
+
+        const form = document.getElementById('mainForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="animate-pulse">正在同步数据...</span>`;
+
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                form.classList.add('hidden');
+                document.getElementById('progressContainer').classList.add('hidden');
+                document.getElementById('successMsg').classList.remove('hidden');
+            } else {
+                alert("提交失败，请检查网络或联系社长。");
+                btn.disabled = false;
+                btn.innerText = "确认并提交";
+            }
+        };
+    </script>
+</body>
+</html>
