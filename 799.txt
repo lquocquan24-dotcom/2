@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026寒假AI实践团 | 成员信息分流</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .step { display: none; }
+        .step.active { display: block; }
+        .progress-bar { transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
+
+    <div class="bg-white p-6 md:p-10 rounded-3xl shadow-2xl w-full max-w-lg border-t-8 border-blue-600 relative overflow-hidden">
+        <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-50 rounded-full blur-3xl"></div>
+        
+        <div id="progressContainer" class="w-full bg-gray-100 h-1.5 rounded-full mb-10 overflow-hidden hidden">
+            <div id="progressBar" class="progress-bar bg-blue-600 h-full w-0"></div>
+        </div>
+
+        <header class="text-center mb-10">
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight">2026 寒假社会实践</h1>
+            <div class="inline-block px-3 py-1 bg-blue-100 text-blue-700 text-xs font-bold rounded-full mt-2 uppercase tracking-widest">
+                AI Club · Panjin Campus
+            </div>
+        </header>
+
+        <div id="authStep" class="step active">
+            <div class="mb-8">
+                <h2 class="text-lg font-bold text-slate-800 mb-2">身份核验</h2>
+                <p class="text-sm text-slate-500">请输入登记的姓名与学号开启分流程序</p>
+            </div>
+            <div class="space-y-5">
+                <div class="group">
+                    <input type="text" id="inputName" placeholder="真实姓名" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all">
+                </div>
+                <div class="group">
+                    <input type="text" id="inputID" placeholder="学生学号" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:bg-white outline-none transition-all">
+                </div>
+                <button onclick="handleAuth()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all">
+                    进入系统
+                </button>
+            </div>
+        </div>
+
+        <form id="mainForm" action="https://formspree.io/f/xbdlqrrv" method="POST" class="hidden">
+            <input type="hidden" name="姓名" id="hiddenName">
+            <input type="hidden" name="学号" id="hiddenID">
+
+            <div id="step1" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">01. 联系方式收集</h2>
+                <div class="space-y-5">
+                    <input type="tel" name="手机号" required placeholder="手机号码" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all">
+                    <input type="text" name="QQ号" required placeholder="QQ号码 (用于进群)" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all">
+                    <button type="button" onclick="nextStep(2)" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">继续</button>
+                </div>
+            </div>
+
+            <div id="step2" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">02. 评优意愿分流</h2>
+                <div class="space-y-4">
+                    <label class="relative block p-5 border-2 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="评优意愿" value="有意愿评优" class="hidden peer" checked>
+                        <div class="font-bold text-slate-800">有意愿参与实践团评优</div>
+                        <div class="text-xs text-slate-500 mt-2">※ 需深度参与调研，负责高质量报告润色及答辩筹备</div>
+                    </label>
+                    <label class="relative block p-5 border-2 rounded-2xl cursor-pointer hover:bg-slate-50 transition-all has-[:checked]:border-blue-600 has-[:checked]:bg-blue-50">
+                        <input type="radio" name="评优意愿" value="无意愿评优" class="hidden peer">
+                        <div class="font-bold text-slate-800">无意愿参与实践团评优</div>
+                        <div class="text-xs text-slate-500 mt-2">按计划完成基础调研任务，配合组内分工结项</div>
+                    </label>
+                    <div class="flex space-x-3 mt-6">
+                        <button type="button" onclick="nextStep(1)" class="w-1/3 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="button" onclick="nextStep(3)" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">继续</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step3" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">03. 个人技能摸底</h2>
+                <div class="space-y-4">
+                    <p class="text-xs text-slate-400">请详细描述：如剪映后期、单反摄影、Python、秀米排版、公文撰写等...</p>
+                    <textarea name="技能点" rows="5" required placeholder="我的技能栈是..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:border-blue-500 focus:bg-white transition-all"></textarea>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="nextStep(2)" class="w-1/3 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="button" onclick="nextStep(4)" class="w-2/3 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-700 transition-all">最后一步</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="step4" class="step">
+                <h2 class="text-xl font-bold mb-6 text-slate-800 italic">04. 后勤保障确认</h2>
+                <div class="space-y-6">
+                    <div class="bg-slate-50 p-4 rounded-2xl">
+                        <label class="block text-xs font-bold text-slate-400 mb-3 uppercase tracking-widest text-center">住宿安排确认</label>
+                        <select name="住宿确认" class="w-full bg-transparent font-bold text-slate-700 outline-none text-center">
+                            <option value="由实践团统一安排">由实践团统一安排 ✅</option>
+                            <option value="个人自行安排">个人自行安排 🏠</option>
+                        </select>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl">
+                        <label class="block text-xs font-bold text-slate-400 mb-3 uppercase tracking-widest text-center">饮食安排确认</label>
+                        <select name="饮食确认" class="w-full bg-transparent font-bold text-slate-700 outline-none text-center">
+                            <option value="由实践团统一安排">由实践团统一安排 🍱</option>
+                            <option value="个人自行安排">个人自行安排 🥣</option>
+                        </select>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button type="button" onclick="nextStep(3)" class="w-1/4 text-slate-400 font-bold hover:text-slate-600 transition-all">返回</button>
+                        <button type="submit" class="w-3/4 bg-green-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-green-100 hover:bg-green-700 transition-all">
+                            确认提交
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div id="successMsg" class="hidden text-center py-10">
+            <div class="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6">✓</div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">提交成功</h2>
+            <p class="text-slate-500 mb-8 px-6 text-sm">信息已存入社长数据库。请截图此页面并在群内回复“已填写”。</p>
+            <button onclick="location.reload()" class="text-blue-600 text-sm font-bold hover:underline">返回首页</button>
+        </div>
+    </div>
+
+    <script>
+        // 【白名单配置】李社长请在此处录入那 29 个人的姓名和学号
+        const whiteList = [
+            { name: "李社长", id: "20230001" },
+            { name: "张三", id: "20230002" },
+            // 后续请继续添加剩余 27 位成员...
+        ];
+
+        function handleAuth() {
+            const nameInput = document.getElementById('inputName').value.trim();
+            const idInput = document.getElementById('inputID').value.trim();
+            const user = whiteList.find(u => u.name === nameInput && u.id === idInput);
+
+            if (user) {
+                document.getElementById('hiddenName').value = nameInput;
+                document.getElementById('hiddenID').value = idInput;
+                document.getElementById('authStep').classList.add('hidden');
+                document.getElementById('mainForm').classList.remove('hidden');
+                document.getElementById('progressContainer').classList.remove('hidden');
+                nextStep(1);
+            } else {
+                alert("身份核验未通过：请确认姓名与学号是否正确。如有疑问请联系社长。");
+            }
+        }
+
+        function nextStep(n) {
+            document.querySelectorAll('.step').forEach(el => el.classList.remove('active'));
+            const target = n === 1 ? 'step1' : 'step' + n;
+            document.getElementById(target).classList.add('active');
+            
+            // 更新进度条
+            const progress = (n / 4) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        // Formspree 异步处理
+        const form = document.getElementById('mainForm');
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = `<span class="inline-block animate-pulse">正在同步数据...</span>`;
+
+            const formData = new FormData(form);
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'Accept': 'application/json' }
+            });
+
+            if (response.ok) {
+                form.classList.add('hidden');
+                document.getElementById('progressContainer').classList.add('hidden');
+                document.getElementById('successMsg').classList.remove('hidden');
+            } else {
+                alert("提交失败，请检查网络设置或联系技术支持。");
+                btn.disabled = false;
+                btn.innerText = "确认提交";
+            }
+        };
+    </script>
+</body>
+</html>
